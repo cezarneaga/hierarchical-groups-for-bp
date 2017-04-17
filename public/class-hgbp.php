@@ -75,6 +75,9 @@ class HGBP_Public {
 		// Potentially override the groups loop template.
 		add_filter( 'bp_get_template_part', array( $this, 'filter_groups_loop_template'), 10, 3 );
 
+		// Add the filter dropdown to the Groups Directory
+		add_action( 'bp_groups_directory_group_types', array( $this, 'output_enable_tree_checkbox' ) );
+
 		// Hook bp_has_groups filters right before a group directory is rendered.
 		add_action( 'bp_before_groups_loop', array( $this, 'add_has_group_parse_arg_filters' ) );
 
@@ -207,6 +210,26 @@ class HGBP_Public {
  	 */
 	public function add_has_group_parse_arg_filters() {
 		add_filter( 'bp_after_has_groups_parse_args', array( $this, 'filter_has_groups_args' ) );
+	}
+
+	/**
+	 *  Adds channel filter dropdown list markup to the groups directory list
+	 *  @uses   	wp_dropdown_categories()
+	 *  @return 	string html markup
+	 *  @since 	0.1.0
+	 */
+	public function output_enable_tree_checkbox() {
+		if ( ! hgbp_get_directory_as_tree_setting() ) {
+			return;
+		}
+
+		// The class "last" is used so that BP will ignore the input.
+		// Hoping that bp-ajax-ignore or similar will be adopted: https://buddypress.trac.wordpress.org/ticket/5676
+		?>
+		<li class="hgbp-enable-tree-view-container" id="hgbp-enable-tree-view-container" style="float:left;">
+			<input id="hgbp-enable-tree-view" name="hgbp-enable-tree-view" type="checkbox" checked="checked" />&ensp;<label for="hgbp-enable-tree-view"><?php _e( 'Show groups hierarchically', 'hierarchical-groups-for-bp' );  ?></label>
+		</li>
+		<?php
 	}
 
 	/**
